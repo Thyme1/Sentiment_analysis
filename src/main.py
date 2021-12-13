@@ -10,9 +10,11 @@ soup = BeautifulSoup(page.content, 'html.parser')
 
 # div class="comment-cloud__body relative"
 # <p class="p-expanded js-expanded mb-0" style>
-mydivs = soup.find_all("div", {"class": "comment-cloud__body relative"})
+# mydivs = soup.find_all("div", {"class": "comment-cloud__body relative"})
+my_paragraphs = soup.find_all("p", class_="p-expanded js-expanded mb-0")
+my_ratings = soup.find_all("span", class_="big-number")
 
-print(soup.find_all("p", class_="p-expanded js-expanded mb-0"))
+print(my_ratings)
 
 
 
