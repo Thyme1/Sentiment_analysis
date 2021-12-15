@@ -3,29 +3,43 @@ from bs4 import BeautifulSoup
 import re
 import sys
 
-
+original_stdout = sys.stdout
 with open("C:\\Users\\konra\\PycharmProjects\\Sentiment_analysis\\scraped.txt", "a",encoding="utf-8") as fp:
-    for i in range(10):
+    for i in range(1):
         page_url = 'https://lubimyczytac.pl/ksiazki/opinie/' + str(i)
         page = requests.get(page_url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
-        my_ratings = soup.find_all("span", class_="big-number")
-        my_paragraphs = soup.find_all("p", class_="p-expanded js-expanded mb-0")
-        my_paragraph_str = str(my_paragraphs)[1:-1]
-        my_paragraph_str = my_paragraph_str.replace("\n", " ")
-        my_paragraph_str = my_paragraph_str.replace("<br/>", "")
-        my_paragraph_str = my_paragraph_str.replace("<br>", "")
-        my_paragraph_str = re.sub(r'</br>', '', my_paragraph_str)
-        paragraph = re.findall(r'(?<=<p class=\"p-expanded js-expanded mb-0\" style=\"display:none;\"> )(.*?)(?=</p>)',my_paragraph_str)
+        # with open('C:\\Users\\konra\\PycharmProjects\\Sentiment_analysis\\src\\html.html', 'w',encoding="utf-8") as ht:
+        #     sys.stdout = ht
+        #     print(soup.prettify())
+
+        # <span class="rating-value">
+
+        my_divs = soup.find_all("div", class_="col-12 mt-sm-3 mt-n4 col-md-9")
+        while my_divs:
+            current_div = my_divs.pop()
 
 
+            soup = current_div
+            my_ratings = soup.find_all("span", class_="big-number")
+            my_paragraphs = soup.find_all("p", class_="p-expanded js-expanded mb-0")
+            # print(soup.prettify())
+            # print(my_ratings)
+            # print(my_paragraphs)
+            rating = re.search(r'\d+', str(my_ratings))
+            if rating is None:
+                rating = '-'
+            my_paragraph_str = str(my_paragraphs)[1:-1]
+            my_paragraph_str = my_paragraph_str.replace("\n", " ")
+            my_paragraph_str = re.sub(r'</br>|<br>|<br/>', '', my_paragraph_str)
 
-        my_ratings = soup.find_all("span", class_="big-number")
-        for rating,item in zip(my_ratings,paragraph):
-            rat = re.search(r'\d+', str(rating))
+            paragraph = re.search(r'(?<=<p class=\"p-expanded js-expanded mb-0\" style=\"display:none;\"> )(.*?)(?=</p>)',my_paragraph_str)
             sys.stdout = fp
-            print(rat.group(),';',item,sep='')
+            if rating == '-':
+                print(rating,';',paragraph.group(),sep='')
+            else:
+                print(rating.group(),';',paragraph.group(),sep='')
 
 
 
