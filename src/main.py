@@ -1,42 +1,27 @@
-import requests
-from bs4 import BeautifulSoup
-import re
-import sys
+from vowpalwabbit import pyvw
 
-original_stdout = sys.stdout
-with open("C:\\Users\\konra\\PycharmProjects\\Sentiment_analysis\\scraped.txt", "a", encoding="utf-8") as fp:
-    for i in range(960,1040):
-        page_url = 'https://lubimyczytac.pl/ksiazki/opinie/' + str(i)
-        page = requests.get(page_url)
-        soup = BeautifulSoup(page.content, 'html.parser')
+model = pyvw.vw(quiet=True)
 
-        # with open('C:\\Users\\konra\\PycharmProjects\\Sentiment_analysis\\src\\html.html', 'w',encoding="utf-8") as ht:
-        #     sys.stdout = ht
-        #     print(soup.prettify())
-        # <span class="rating-value">
+POSITIVE = ['najlepsza', "dobra", "dobrze", "świetna", "świetnie" "ciekawa", "ciekawe" "ulubiona", "ulubione", "wciągnęła", "wciągająca", "przyjemna", "przyjemnie", "udana"]  # odmiana słów - regex?
+NEGATIVE = ["najgorsza", "słaba", "porażka" ]
 
-        my_divs = soup.find_all("div", class_="col-12 mt-sm-3 mt-n4 col-md-9")
-        while my_divs:
-            current_div = my_divs.pop()
+train_examples = []
 
-            soup = current_div
-            my_ratings = soup.find_all("span", class_="big-number")
-            my_paragraphs = soup.find_all("p", class_="p-expanded js-expanded mb-0")
+with open("src\\placeholder_data.txt", "r", encoding="utf-8") as train_data:
+    lines = train_data.readlines()
+    for opinion in lines:
+        train_line = ''
+        opinion = opinion.split(';')
+        train_line += opinion[0] + ' | ' + 'characters:.' + str(len(opinion[1]))
+        word_list = opinion[1].split()
+        train_line += ' words:.' + str(len(word_list))
+        exclamation_marks = opinion[1].count('!')
+        train_line += ' exclamation_marks:.' + str(exclamation_marks)
+        positive_words_count = sum(el in POSITIVE for el in word_list)
+        negative_words_count = sum(el in NEGATIVE for el in word_list)
+        train_line += ' positive_words:.' + str(positive_words_count)
+        train_line += ' negative_words:.' + str(negative_words_count)
 
-            rating = re.search(r'\d+', str(my_ratings))
+        train_examples.append(train_line)
 
-            my_paragraph_str = str(my_paragraphs)[1:-1]
-            my_paragraph_str = my_paragraph_str.replace("\n", " ")
-            my_paragraph_str = re.sub(r'</br>|<br>|<br/>', '', my_paragraph_str)
-
-            paragraph = re.search(
-                r'(?<=<p class=\"p-expanded js-expanded mb-0\" style=\"display:none;\"> )(.*?)(?=</p>)',
-                my_paragraph_str)
-            sys.stdout = fp
-            if paragraph is None:
-                continue
-            else:
-                if rating is None:
-                    print('-', ';', paragraph.group(), sep='')
-                else:
-                    print(rating.group(), ';', paragraph.group(), sep='')
+    print(train_examples)
