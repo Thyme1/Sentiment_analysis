@@ -4,8 +4,8 @@ import re
 import sys
 
 original_stdout = sys.stdout
-with open("src\\data.txt", "a", encoding="utf-8") as fp:
-    for i in range(1040, 1120):
+with open("src\\new_data.txt", "a", encoding="utf-8") as fp:
+    for i in range(3340, 3440):
         page_url = 'https://lubimyczytac.pl/ksiazki/opinie/' + str(i)
         page = requests.get(page_url)
         soup = BeautifulSoup(page.content, 'html.parser')
