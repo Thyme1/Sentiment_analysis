@@ -17,12 +17,14 @@ def change_into_training_data(opinion, test):
     train_line += ' words:.' + str(len(word_list))
     train_line += ' exclamation_marks:.' + str(opinion[1].count('!'))
     train_line += ' question_marks:.' + str(opinion[1].count('?'))
-    positive_words_count = sum(el.lower() in POSITIVE for el in word_list)
-    negative_words_count = sum(el.lower() in NEGATIVE for el in word_list)
+    result2 = [re.sub(r'[:.,?!;"„”]', ' ', i) for i in word_list]
+    positive_words_count = sum(el.lower() in POSITIVE for el in result2)
+    negative_words_count = sum(el.lower() in NEGATIVE for el in result2)
     train_line += ' positive_words:.' + str(positive_words_count)
     train_line += ' negative_words:.' + str(negative_words_count)
-    result = re.sub(r'[0-9]+|:|\.|\?|!|;|"', ' ', opinion[1])
+    result = re.sub(r'[0-9]+|[:.,?!;"„”]', ' ', opinion[1])
     train_line += ' plain_text:.' + str(result.lower())
+
 
     return train_line
 
@@ -38,7 +40,7 @@ POSITIVE = ['akcja', 'aktywna', 'aktywnie', 'aktywny', 'altruistyczny', 'ambitne
             'błogosławieństwo', 'błogosławiony', 'błogość', 'błyszczy', 'cały', 'całym sercem', 'ceniona', 'ceniony',
             'cenna', 'cenny', 'charyzma', 'charyzmatyczna', 'charyzmatyczny', 'chętna', 'chętnie', 'chętny',
             'chęćciepły', 'ciekawe', 'ciekawie', 'ciepła', 'ciepło', 'cierpliwość', 'cierpliwy', 'cieszyć', 'cieszę',
-            'cnotliwy', 'cud', 'cudowny', 'czarujący', 'czekam', 'czule', 'czuć się dobrze', 'czuła', 'czułość',
+            'cnotliwy', 'cud', 'cudowny', 'cudowna','cudowne','cudownie','cudna','cudnie','cudne','cudny' 'czarujący', 'czekam', 'czule', 'czuć się dobrze', 'czuła', 'czułość',
             'czuły', 'czysta miłość i światło', 'czysty', 'delikatna', 'delikatnie', 'delikatny', 'dobra', 'dobre',
             'dobrze', 'doskonale', 'doskonała', 'doskonały', 'dowcipna', 'emanowała', 'empatyczna', 'empatyczny',
             'esencja', 'fajna', 'fajnie', 'fajny', 'fantastyczna', 'fantastyczne', 'fantastycznie', 'fantastyczny',
@@ -80,7 +82,7 @@ NEGATIVE = ['bez wyrazu', 'brak', 'brakuje', 'drażni', 'drażniła', 'drażnił
             'nudno', 'nużąca', 'nużące', 'nużący', 'odradzam', 'okropna', 'okropnie', 'okropny', 'ostrzegam',
             'ostrzeżenie', 'powtarza', 'powtarzalna', 'powtarzalny', 'pretensjonalna', 'pretensjonalną', 'problem',
             'przykro', 'płytka', 'płytki', 'płytkie', 'spadek', 'szajs', 'słaba', 'słabiutko', 'słaboporażka', 'słaby',
-            'trudno', 'z trudem', 'zła', 'żałuję', '☹']
+            'trudno', 'z trudem', 'zła', 'żałuję', '☹',"nie", "najgorsze"]
 
 print(len(POSITIVE))
 print(len(NEGATIVE))
