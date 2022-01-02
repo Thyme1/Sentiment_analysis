@@ -5,18 +5,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from vowpalwabbit import pyvw
 from sklearn.metrics import mean_squared_error
 
-
+## zapytać o testowanie wynikó
 def change_into_training_data(opinion, test):
     train_line = ''
     opinion = opinion.split(';')
     if test:
-        train_line += ' |' + 'characters:.' + str(len(opinion[1]))
+          train_line += ' |' + 'characters:.' + str(len(opinion[1]))
     else:
-        train_line += opinion[0] + ' |' + 'characters:.' + str(len(opinion[1]))
+          train_line += opinion[0] + ' |' + 'characters:.' + str(len(opinion[1]))
+
     word_list = opinion[1].split()
-    train_line += ' words:.' + str(len(word_list))
-    train_line += ' exclamation_marks:.' + str(opinion[1].count('!'))
-    train_line += ' question_marks:.' + str(opinion[1].count('?'))
+    # train_line += ' words:' + str(len(word_list))
+    # train_line += ' exclamation_marks:.' + str(opinion[1].count('!'))
+    # train_line += ' question_marks:.' + str(opinion[1].count('?'))
     result2 = [re.sub(r'[:.,?!;"„”]', ' ', i) for i in word_list]
     positive_words_count = sum(el.lower() in POSITIVE for el in result2)
     negative_words_count = sum(el.lower() in NEGATIVE for el in result2)
@@ -24,6 +25,7 @@ def change_into_training_data(opinion, test):
     train_line += ' negative_words:.' + str(negative_words_count)
     result = re.sub(r'[0-9]+|[:.,?!;"„”]', ' ', opinion[1])
     train_line += ' plain_text:.' + str(result.lower())
+
 
 
     return train_line
